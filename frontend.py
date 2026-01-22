@@ -23,7 +23,7 @@ if st.button("Get Answer") and question:
                 answer = text_to_sql_rag(question)
 
             else:
-                chunks = query_faiss(question, k=5)
+                chunks = query_faiss(question, k=100)
                 answer = generate_response(chunks, question)
 
             st.success("Answer:")

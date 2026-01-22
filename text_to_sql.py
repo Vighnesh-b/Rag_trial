@@ -1,8 +1,5 @@
-import requests
-import os
-from dotenv import load_dotenv
 import sqlite3
-load_dotenv()
+from LlmComm import askLlm
 
 def generate_sql(question):
     prompt = f"""
@@ -31,23 +28,9 @@ def generate_sql(question):
     Question:
     {question}
     """
-
-    response = requests.post(
-        "https://openrouter.ai/api/v1/chat/completions",
-        headers={
-            "Authorization": f"Bearer {os.getenv('LLM_API_KEY')}",
-            "Content-Type": "application/json",
-        },
-        json={
-            "model": "meta-llama/llama-3.3-70b-instruct:free",
-            "messages": [
-                {"role": "user", "content": prompt}
-            ],
-            "temperature": 0
-        }
-    ).json()
-
-    return response["choices"][0]["message"]["content"].strip()
+    model= "meta-llama/llama-3.3-70b-instruct:free"
+    response = askLlm(prompt,model)
+    return response
 
 def run_sql(sql):
     conn = sqlite3.connect("employeeDB.db")
@@ -56,7 +39,6 @@ def run_sql(sql):
     cursor.execute(sql)
     rows = cursor.fetchall()
     columns = [desc[0] for desc in cursor.description]
-
     conn.close()
     return columns, rows
 
@@ -71,7 +53,7 @@ def format_answer(question, columns, rows):
 
     prompt = f"""
 Use the following database results to answer the question.
-Provide the answer in a concise small sentence.
+Provide the answer in a small paragraphs.
 Do not add extra information.
 
 Question:
@@ -80,25 +62,13 @@ Question:
 Results:
 {context}
 """
+    model="xiaomi/mimo-v2-flash:free"
+    response = askLlm(prompt,model,800,0.2)
 
-    response = requests.post(
-        "https://openrouter.ai/api/v1/chat/completions",
-        headers={
-            "Authorization": f"Bearer {os.getenv('LLM_API_KEY')}",
-            "Content-Type": "application/json",
-        },
-        json={
-            "model": "xiaomi/mimo-v2-flash:free",
-            "messages": [
-                {"role": "user", "content": prompt}
-            ],
-            "temperature": 0.1
-        }
-    ).json()
-
-    return response["choices"][0]["message"]["content"]
+    return response
 
 def text_to_sql_rag(question):
+    print(question)
     sql = generate_sql(question)
     print("Generated SQL:", sql)
 
