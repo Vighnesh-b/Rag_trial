@@ -35,7 +35,7 @@ def query_faiss(question, k=5):
     conn.close()
     return results
 
-def generate_response(chunks, query):
+def generate_response(chunks, question):
 
     model="xiaomi/mimo-v2-flash:free"
     context = "\n".join(chunks)
@@ -49,7 +49,7 @@ def generate_response(chunks, query):
     {context}
 
     Task:
-    Answer the question: "{query}"
+    Answer the question: "{question}"
 
     Be concise and summarize the Information given such that it answers the question.
 
@@ -61,7 +61,7 @@ def generate_response(chunks, query):
 
 if __name__=="__main__":
 
-    question="Who is Daniel Killebrew?"
+    question="Who are employees that show leadership qualities?"
     chunks=query_faiss(question,50)
     print("\n".join(chunks))
     print(generate_response(chunks,question))
