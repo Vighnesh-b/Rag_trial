@@ -3,7 +3,7 @@ import json
 from text_to_sql import text_to_sql_rag, multiple_questions_to_sql
 from retrieval_pipeline import query_faiss,generate_response
 
-original_question="Give insights on the gender diversity HR department and check if there is any gender based discrimination"
+original_question="Give me the average salary of men"
 print("Original Question: ",original_question)
 prompt = f"""
 You are an expert data analyst assisting a hybrid SQL + RAG system.
@@ -16,7 +16,7 @@ employees(
     Employee_ID INTEGER,
     Name TEXT,
     Age INTEGER,
-    Gender TEXT,
+    Gender TEXT (Male or Female),
     Department TEXT,
     Job_Title TEXT,
     Experience_Years INTEGER,
@@ -74,15 +74,19 @@ for i in range(len(response)):
 
 t2s_summaries=multiple_questions_to_sql(t2s_questions)
 rag_summaries=json.dumps(rag_summaries)
+print("t2s:",t2s_summaries)
+print("RAG:",rag_summaries)
 summarization_prompt = f"""
 You are a data analyst.
 
-Using ONLY the information in the JSON below, write an insight-focused summary of the HR department.
+Using ONLY the information in the JSON below, write an insight-focused summary of the data that answers the users question given below.
 Include key numbers (counts, averages, distributions) to support each insight.
 You may interpret patterns and comparisons, but do not introduce facts not present in the data.
 
 Write 1–3 concise paragraphs, grounded in the evidence.
 
+user-question:
+{original_question}
 JSON:
 {t2s_summaries}
 {rag_summaries}

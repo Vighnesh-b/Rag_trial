@@ -36,12 +36,5 @@ def askLlm(prompt:str, model:str, max_token:int = 800, temperature:int =0.0):
     response=response.json()
     return strip_code_fences(response["choices"][0]["message"]["content"].strip())
 
-#     client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
-
-#     response = client.models.generate_content(
-#         model="gemini-3-flash-preview", contents=prompt
-#     )
-#     return response.candidates[0].content.parts[0].text
-
-# if __name__=="__main__":
-#     print(askLlm("What is the meaning of life"," "))
+if __name__=="__main__":
+    print(askLlm("What is the meaning of life"," "))

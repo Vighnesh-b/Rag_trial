@@ -95,7 +95,7 @@ def multiple_questions_to_sql(questions):
     Employee_ID INTEGER,
     Name TEXT,
     Age INTEGER,
-    Gender TEXT,
+    Gender TEXT (Male or Female),
     Department TEXT,
     Job_Title TEXT,
     Experience_Years INTEGER,
@@ -131,8 +131,9 @@ def multiple_questions_to_sql(questions):
     for i in range(len(sql_query_response)):
         sql=sql_query_response[i]['sql-query']
         cols,rows=run_sql(sql)
-        sql_query_response[i]['database-result'] = "\n".join(
-        ", ".join(f"{c}: {v}" for c, v in zip(cols, rows)))
+        sql_query_response[i]['database-result'] = ", ".join(f"{c}: {v}" for c, v in zip(cols, rows))
+
+    print(sql_query_response)
     
     summarization_prompt=f"""
     Use the following database results to answer the question.
@@ -155,7 +156,6 @@ def multiple_questions_to_sql(questions):
 if __name__ == "__main__":
     # q = "Who is Daniel Killebrew?"
     # print(text_to_sql_rag(q))
-
 
     questions="""1. What is the gender distribution (count of employees by gender) in the HR department?,
     2. What is the average salary for each gender in the HR department?,
